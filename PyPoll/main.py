@@ -29,7 +29,13 @@ with open(fileLoad) as Election_Data:
         # increment count of total months
         totalVotes += 1
 
+        # add on to the list of candidates
+        candidates = row[2]
+        candidateList.append(candidates)
     
+    # using set() to remove all duplicate candidate names and then restore back to a list
+    candidateList = list(set(candidateList))
+
 
     # start generating the output
     output = (
@@ -37,6 +43,9 @@ with open(fileLoad) as Election_Data:
         f"-------------------------\n"
         f"Total Votes: {totalVotes}\n"
         f"-------------------------\n"
+        f"{candidateList[0].title()}: \n"
+        f"{candidateList[1].title()}: \n"
+        f"{candidateList[2].title()}: \n"
 
     )
 
