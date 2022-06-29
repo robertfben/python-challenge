@@ -6,7 +6,7 @@ import os
 fileLoad = os.path.join("Resources", "budget_data.csv")
 
 # file to hold the output of the PyBank analysis
-outputFile = os.path.join("PyBankAnalysis.txt")
+outputFile = os.path.join("analysis", "PyBankAnalysis.txt")
 
 # create variables, starting empty
 totalMonths = 0
