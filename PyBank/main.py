@@ -85,7 +85,6 @@ output = (
 
 # print output to terminal
 print(output)
-# print(monthlyChanges)
 
 # export the output to the output text file
 with open(outputFile, "w") as textFile:

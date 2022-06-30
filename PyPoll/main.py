@@ -9,11 +9,11 @@ fileLoad = os.path.join("Resources", "election_data.csv")
 outputFile = os.path.join("analysis", "PyPollAnalysis.txt")
 
 # create variables, starting empty
-totalVotes = 0
-Stockham_Votes = 0
-Degette_Votes = 0 
-Doane_Votes = 0
-candidateList = []
+totalVotes = 0     # will hold total # of votes
+candidateList = [] # list to hold candidate names
+candidateVotes = {} # dictionary to hold the votes each candidate receives
+winningCount = 0 # will hold the winning count
+winningCandidate = ""
 
 # read CSV file
 with open(fileLoad) as Election_Data:
@@ -22,65 +22,71 @@ with open(fileLoad) as Election_Data:
 
     # read header row
     header = next(csvreader)
+
     # move to first row
     firstRow = next(csvreader)
 
     # increment count of first vote starting at 1st non-header row 
     totalVotes += 1
 
-    # increment count of first vote for Stockham at 1st non-header row
-    Stockham_Votes += 1
-
-    # increment count of first Doane vote
-    Degette_Votes = 0
+    # rows will be lists
+        # index 2 is the name of candidate the vote is for
 
     for row in csvreader:
         # increment count of total months
         totalVotes += 1
 
-        # add on to the list of candidates
-        candidates = row[2]
-        candidateList.append(candidates)
+        # check to see if candidate is in list of candidates
+        if row[2] not in candidateList:
+            # if candidate is not in the list, add it to the list of candidates
+            candidateList.append(row[2])
 
-        # running count of each of the three candidate's votes
-        if row[2] == "Charles Casper Stockham":
-            Stockham_Votes += 1
-        elif row[2] == "Diana DeGette":
-            Degette_Votes += 1
-        elif row[2] == "Raymon Anthony Doane":
-            Doane_Votes += 1
+            # add the value to the dictionary as well
+            # start the count at 1 for the votes
+            candidateVotes[row[2]] = 1
+        
         else:
-            pass
-     
-    # using set() to remove all duplicate candidate names and then restore back to a sorted list
-    candidateList = sorted(list(set(candidateList)))
+            # if candidate is already in list of candidates
+            # add a vote to candidate vote count
+            candidateVotes[row[2]] += 1
 
-    # can print the candidate List to verify who the candidates are, and in what order when sorted alphabetically
-    #print(candidateList) 
+    # create empty string to initialize final vote output    
+    voteOutput = ""
 
-    # Calculating % of Votes for each candidate
-    Stockham_Votes_Percent = (Stockham_Votes / totalVotes) * 100
-    Degette_Votes_Percent = (Degette_Votes / totalVotes) * 100
-    Doane_Votes_Percent = (Doane_Votes / totalVotes) * 100
+    for candidate in candidateVotes:
+        # get vote count and percentage of the vote from vote dictionary
+        votes = candidateVotes.get(candidate)
+        votePct = (float(votes) / float(totalVotes)) * 100.00
+
+        # generate a formatted string for each candidate with their % of votes
+        voteOutput += f"{candidate}: {votePct:,.3f}% ({votes:,})\n"
+
+        # compare the votes to the winning count
+        if votes > winningCount:
+            # update the votes to be the new winning count 
+            winningCount = votes
+            # update the winning candidate
+            winningCandidate = candidate
+
+    winningCandidateOutput = f"Winner: {winningCandidate}\n"
+
 
     # start generating the output
     output = (
         f"\n\nElection Results\n"
         f"-------------------------\n"
-        f"Total Votes: {totalVotes}\n"
+        f"Total Votes: {totalVotes:,}\n"
         f"-------------------------\n"
-        f"{candidateList[0]}: {Stockham_Votes_Percent:,.3f}% ({Stockham_Votes})\n"
-        f"{candidateList[1]}: {Degette_Votes_Percent:,.3f}% ({Degette_Votes})\n"
-        f"{candidateList[2]}: {Doane_Votes_Percent:,.3f}% ({Doane_Votes})\n"
-        f"Winner: {candidateList[1]}\n"
+        f"{voteOutput}"
         f"-------------------------\n"
-
+        f"{winningCandidateOutput}"
+        f"-------------------------\n"
     )
-
 
 # print output to terminal
 print(output)
 
 # export the output to the output text file
 with open(outputFile, "w") as textFile:
+    # write output to to text file
     textFile.write(output)
